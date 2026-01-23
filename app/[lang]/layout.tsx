@@ -1,6 +1,8 @@
-// app/[lang]/layout.tsx
 import { notFound } from "next/navigation";
 import type { Lang } from "@/lib/data";
+import SiteShell from "@/components/layout/SiteShell";
+// Импортируем функцию получения категорий
+import { getNavbarCategories } from "@/lib/actions/public";
 
 export default async function LangLayout({
   children,
@@ -11,10 +13,18 @@ export default async function LangLayout({
 }) {
   const { lang } = await params;
 
+  // Проверка языка
   if (lang !== "az" && lang !== "ru") notFound();
 
-  // если нужен строгий тип
-  const safeLang = lang as Lang;
+  // 1. Загружаем категории с сервера (кешируется автоматически)
+  const categories = await getNavbarCategories(lang as Lang);
 
-  return <>{children}</>;
+  return (
+    <SiteShell 
+      lang={lang as Lang} 
+      categories={categories} // <--- 2. Передаем данные клиенту
+    >
+      {children}
+    </SiteShell>
+  );
 }

@@ -1,9 +1,12 @@
-// proxy.ts
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
+import { createServerClient } from "@supabase/ssr";
 
 const SUPPORTED = ["az", "ru"] as const;
 type Lang = (typeof SUPPORTED)[number];
+
+function isAdmin(pathname: string) {
+  return pathname === "/admin" || pathname.startsWith("/admin/");
+}
 
 function fromAcceptLanguage(req: NextRequest): Lang {
   const al = (req.headers.get("accept-language") || "").toLowerCase();
@@ -16,10 +19,31 @@ function fromCookie(req: NextRequest): Lang | null {
 }
 
 function isPublicFile(pathname: string) {
-  return pathname.includes("."); // /favicon.ico, /robots.txt, /images/.. etc
+  return pathname.includes(".");
 }
 
-export function proxy(req: NextRequest) {
+async function refreshSupabaseSession(req: NextRequest, res: NextResponse) {
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return req.cookies.getAll();
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            res.cookies.set(name, value, options);
+          });
+        },
+      },
+    }
+  );
+
+  await supabase.auth.getUser();
+}
+
+export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   // пропускаем next, api и файлы
@@ -27,16 +51,22 @@ export function proxy(req: NextRequest) {
     return NextResponse.next();
   }
 
+  // ✅ Админка: НЕ языковой редирект, но сессии Supabase обновляем
+  if (isAdmin(pathname)) {
+    const res = NextResponse.next();
+    await refreshSupabaseSession(req, res);
+    return res;
+  }
+
+  // --- дальше твоя языковая логика 1-в-1 ---
   const seg = pathname.split("/")[1] as Lang | undefined;
 
-  // если URL уже с языком — просто обновим cookie lang и пропускаем дальше
   if (seg && SUPPORTED.includes(seg)) {
     const res = NextResponse.next();
     res.cookies.set("lang", seg, { path: "/", sameSite: "lax" });
     return res;
   }
 
-  // иначе выбираем язык: cookie -> accept-language
   const lang = fromCookie(req) ?? fromAcceptLanguage(req);
 
   const url = req.nextUrl.clone();

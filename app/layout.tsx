@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { Montserrat, Open_Sans } from "next/font/google";
 import "./globals.css";
-
-import ClientLayout from "../components/layout/ClientLayout";
 import { LangProvider } from "@/components/layout/LangProvider";
 import { cookies } from "next/headers";
 
@@ -39,7 +37,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang={lang}>
       <body className={`${montserrat.variable} ${openSans.variable} font-sans`}>
         <LangProvider>
-          <ClientLayout>{children}</ClientLayout>
+          {children}
         </LangProvider>
       </body>
     </html>

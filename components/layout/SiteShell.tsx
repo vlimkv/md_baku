@@ -1,19 +1,28 @@
 "use client";
 
+import { useEffect } from "react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { useLang } from "@/components/layout/LangProvider";
+import type { Lang } from "@/lib/data";
 // Импортируем тип категории
-import type { CategoryNavT } from "@/lib/actions/public"; 
+import type { CategoryNavT } from "@/lib/actions/public";
 
-export default function ClientLayout({ 
+export default function SiteShell({
   children,
-  categories // <--- 1. Получаем проп
-}: { 
+  lang,
+  categories, // <--- 1. Принимаем категории
+}: {
   children: React.ReactNode;
-  categories: CategoryNavT[]; // <--- 2. Типизируем
+  lang: Lang;
+  categories: CategoryNavT[];
 }) {
-  const { lang, setLang, menuOpen, setMenuOpen, t } = useLang();
+  const { setLang, menuOpen, setMenuOpen, t } = useLang();
+
+  // Синхронизация языка при смене роута
+  useEffect(() => {
+    setLang(lang);
+  }, [lang, setLang]);
 
   return (
     <div className="min-h-screen bg-[#F8F9FA] font-sans text-gray-900 selection:bg-amber-100 selection:text-amber-900">
@@ -23,7 +32,7 @@ export default function ClientLayout({
         menuOpen={menuOpen}
         setMenuOpen={setMenuOpen}
         t={t}
-        categories={categories} // <--- 3. ВАЖНО: Передаем в Header
+        categories={categories} // <--- 2. Передаем в Хедер
       />
 
       {children}
