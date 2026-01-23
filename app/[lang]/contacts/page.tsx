@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import {
   MapPin,
@@ -17,7 +17,7 @@ import { siteContent, Lang } from "@/lib/data";
 
 /* eslint-disable @next/next/no-img-element */
 
-// --- UI COMPONENTS ---
+// --- TYPES & UI COMPONENTS ---
 
 const SectionHeading = ({ title, subtitle }: { title: string; subtitle: string }) => (
   <div className="mb-10 md:mb-14">
@@ -141,20 +141,21 @@ const SocialButton = ({
     </a>
   );
 };
+// --- MAIN PAGE COMPONENT ---
 
 export default function ContactPage() {
-  const params = useParams(); // { lang: 'az' | 'ru' }
+  const params = useParams();
+  // Безопасное получение языка
   const lang = (params?.lang as Lang) || "ru";
 
   const t = useMemo(() => {
-    // fallback если вдруг кто-то зайдёт на /en/contacts или params сломан
     return (siteContent as any)[lang] ?? siteContent.ru;
   }, [lang]);
 
-  // Ссылки (поставь реальные когда будут)
-  const instagramUrl = "#";
-  const facebookUrl = "#";
-  const mapRouteUrl = "https://maps.google.com";
+  // Ссылки
+  const instagramUrl = "https://instagram.com";
+  const facebookUrl = "https://facebook.com";
+  const mapRouteUrl = "https://www.google.com/maps/dir//Baku,+Azerbaijan"; 
 
   const [formStatus, setFormStatus] = useState<"idle" | "sending" | "sent">("idle");
 
@@ -163,6 +164,8 @@ export default function ContactPage() {
     setFormStatus("sending");
     setTimeout(() => setFormStatus("sent"), 1200);
   };
+  
+  if (!t || !t.contact) return null;
 
   return (
     <div className="min-h-screen bg-[#F7F8FA]">
@@ -331,11 +334,12 @@ export default function ContactPage() {
             {/* MAP */}
             <div className="relative overflow-hidden rounded-3xl border border-gray-200/70 bg-white shadow-[0_24px_70px_-55px_rgba(0,0,0,0.45)] min-h-[320px]">
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3039.428790610344!2d49.849646315664!3d40.37719097936982!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x40307d079efb5163%3A0xc20aa51a5f0f5e01!2zQmFrdSwgQXplcmJhaWphbg!5e0!3m2!1sen!2sus!4v1645000000000!5m2!1sen!2sus"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3039.428674403756!2d49.86709241539662!3d40.40926167936601!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x40307d40a880b8bd%3A0x981d3f9f3b8b6e6!2sBaku%2C%20Azerbaijan!5e0!3m2!1sen!2s!4v1646738927426!5m2!1sen!2s"
                 className="absolute inset-0 w-full h-full grayscale-[0.9] contrast-125"
                 style={{ border: 0 }}
                 allowFullScreen
                 loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
               />
 
               <div className="absolute left-4 right-4 top-4">

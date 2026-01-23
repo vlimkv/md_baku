@@ -93,12 +93,10 @@ export default function Header({ lang, setLang, menuOpen, setMenuOpen, t, catego
             </a>
           </div>
           <div className="flex items-center gap-4">
-            <div className="flex gap-2 border-r border-gray-300 pr-3">
+            <div className="flex gap-2">
               <button type="button" onClick={() => switchLang("az")} className={`font-bold hover:text-gray-900 ${lang === "az" ? "text-gray-900" : "text-gray-400"}`}>AZ</button>
               <button type="button" onClick={() => switchLang("ru")} className={`font-bold hover:text-gray-900 ${lang === "ru" ? "text-gray-900" : "text-gray-400"}`}>RU</button>
             </div>
-            <a href="#" className="hover:text-gray-900 transition font-medium">{t.topbar.register}</a>
-            <a href="#" className="hover:text-gray-900 transition font-medium">{t.topbar.login}</a>
           </div>
         </div>
       </div>
@@ -146,10 +144,6 @@ export default function Header({ lang, setLang, menuOpen, setMenuOpen, t, catego
 
             {/* PC Actions */}
             <div className="hidden md:flex items-center gap-6 ml-auto">
-              <button className="flex flex-col items-center group text-gray-500 hover:text-amber-600 transition">
-                <User size={24} className="mb-1 group-hover:-translate-y-1 transition-transform duration-300" strokeWidth={1.5} />
-                <span className="text-[10px] uppercase font-bold">{t.header.account}</span>
-              </button>
               <button className="flex flex-col items-center group text-gray-500 hover:text-amber-600 transition relative">
                 <div className="relative">
                   <Heart size={24} className="mb-1 group-hover:-translate-y-1 transition-transform duration-300" strokeWidth={1.5} />

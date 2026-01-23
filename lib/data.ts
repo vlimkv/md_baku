@@ -9,13 +9,10 @@ export const siteContent = {
 
     topbar: {
       addressShort: "Bakı şəhəri, Nərimanov r., Əliyar Əliyev küç.",
-      register: "Qeydiyyat",
-      login: "Giriş",
     },
 
     header: {
       searchPlaceholder: "Minlərlə məhsul arasında axtarış...",
-      account: "Hesab",
       favorites: "Seçilənlər",
       cart: "Səbət",
       allCategories: "Bütün Kateqoriyalar",
@@ -172,13 +169,10 @@ export const siteContent = {
 
     topbar: {
       addressShort: "г. Баку, Нараимановский р-н, ул. Алияра Алиева",
-      register: "Регистрация",
-      login: "Вход",
     },
 
     header: {
       searchPlaceholder: "Поиск по тысячам товаров...",
-      account: "Аккаунт",
       favorites: "Избранное",
       cart: "Корзина",
       allCategories: "Все категории",
