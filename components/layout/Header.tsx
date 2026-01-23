@@ -27,13 +27,13 @@ import type { CategoryNavT } from "@/lib/actions/public";
 
 type HeaderT = {
   nav: readonly string[];
-  topbar: { addressShort: string; register: string; login: string };
+  topbar: { addressShort: string };
   header: {
     searchPlaceholder: string;
-    account: string;
     favorites: string;
     cart: string;
     allCategories: string;
+    phoneLabel: string;
   };
   sections: { brandsLabel: string };
 };
