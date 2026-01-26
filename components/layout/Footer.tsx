@@ -129,7 +129,7 @@ export default function Footer({ t, lang }: Props) {
               <Facebook size={20} />
             </a>
             <a
-              href="#"
+              href="https://www.instagram.com/detektorbaku"
               target="_blank"
               rel="noopener noreferrer"
               className="w-10 h-10 bg-gray-800 flex items-center justify-center hover:bg-[#E4405F] hover:text-white transition rounded-lg text-gray-400 hover:-translate-y-1"

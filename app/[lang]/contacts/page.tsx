@@ -154,7 +154,7 @@ export default function ContactPage() {
   }, [lang]);
 
   // Ссылки
-  const instagramUrl = "https://instagram.com";
+  const instagramUrl = "https://www.instagram.com/detektorbaku";
   const facebookUrl = "https://facebook.com";
   const mapRouteUrl = "https://www.google.com/maps/dir//Baku,+Azerbaijan"; 
 
