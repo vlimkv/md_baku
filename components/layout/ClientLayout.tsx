@@ -28,7 +28,7 @@ export default function ClientLayout({
 
       {children}
 
-      <Footer t={t} />
+      <Footer t={t} lang={lang} />
     </div>
   );
 }

@@ -1,8 +1,10 @@
 import { notFound } from "next/navigation";
 import type { Lang } from "@/lib/data";
 import SiteShell from "@/components/layout/SiteShell";
-// Импортируем функцию получения категорий
 import { getNavbarCategories } from "@/lib/actions/public";
+import { CartProvider } from "@/lib/context/cart-context";
+// 👇 1. ИМПОРТИРУЕМ КОРЗИНУ (путь поправь, если он другой)
+import { CartDrawer } from "@/components/cart/cart-drawer"; 
 
 export default async function LangLayout({
   children,
@@ -13,18 +15,21 @@ export default async function LangLayout({
 }) {
   const { lang } = await params;
 
-  // Проверка языка
   if (lang !== "az" && lang !== "ru") notFound();
 
-  // 1. Загружаем категории с сервера (кешируется автоматически)
   const categories = await getNavbarCategories(lang as Lang);
 
   return (
-    <SiteShell 
-      lang={lang as Lang} 
-      categories={categories} // <--- 2. Передаем данные клиенту
-    >
-      {children}
-    </SiteShell>
+    <CartProvider>
+      <SiteShell 
+        lang={lang as Lang} 
+        categories={categories}
+      >
+        {children}
+      </SiteShell>
+      
+      <CartDrawer lang={lang as Lang} />
+      
+    </CartProvider>
   );
 }

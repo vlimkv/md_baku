@@ -5,13 +5,12 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { useLang } from "@/components/layout/LangProvider";
 import type { Lang } from "@/lib/data";
-// Импортируем тип категории
 import type { CategoryNavT } from "@/lib/actions/public";
 
 export default function SiteShell({
   children,
   lang,
-  categories, // <--- 1. Принимаем категории
+  categories,
 }: {
   children: React.ReactNode;
   lang: Lang;
@@ -32,12 +31,13 @@ export default function SiteShell({
         menuOpen={menuOpen}
         setMenuOpen={setMenuOpen}
         t={t}
-        categories={categories} // <--- 2. Передаем в Хедер
+        categories={categories}
       />
 
       {children}
 
-      <Footer t={t} />
+      {/* 👇 ИСПРАВЛЕНО: Передаем lang в Footer */}
+      <Footer t={t} lang={lang} />
     </div>
   );
 }

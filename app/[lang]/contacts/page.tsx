@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useMemo, useState, useEffect } from "react";
+import { sendToTelegram } from "@/lib/actions/contacts";
 import { useParams } from "next/navigation";
 import {
   MapPin,
@@ -159,10 +160,18 @@ export default function ContactPage() {
 
   const [formStatus, setFormStatus] = useState<"idle" | "sending" | "sent">("idle");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setFormStatus("sending");
-    setTimeout(() => setFormStatus("sent"), 1200);
+    const formData = new FormData(e.currentTarget);
+    const result = await sendToTelegram(formData);
+
+    if (result.success) {
+      setFormStatus("sent");
+    } else {
+      setFormStatus("idle");
+      alert("Ошибка отправки. Попробуйте позже.");
+    }
   };
   
   if (!t || !t.contact) return null;
@@ -265,6 +274,7 @@ export default function ContactPage() {
                           {t.contact.form.nameLabel}
                         </label>
                         <input
+                          name="name"
                           required
                           type="text"
                           placeholder={t.contact.form.namePlaceholder}
@@ -277,6 +287,7 @@ export default function ContactPage() {
                           {t.contact.form.phoneLabel}
                         </label>
                         <input
+                          name="phone"
                           required
                           type="tel"
                           placeholder={t.contact.form.phonePlaceholder}
@@ -290,6 +301,7 @@ export default function ContactPage() {
                         {t.contact.form.messageLabel}
                       </label>
                       <textarea
+                        name="message"
                         required
                         rows={5}
                         placeholder={t.contact.form.messagePlaceholder}

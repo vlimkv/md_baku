@@ -1,6 +1,7 @@
 "use client";
 
-import { Phone, Mail, MapPin, Facebook, Instagram, Youtube, ChevronRight } from "lucide-react";
+import Link from "next/link";
+import { Phone, MapPin, Facebook, Instagram, Youtube, ChevronRight, ShieldCheck } from "lucide-react";
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -11,9 +12,10 @@ type FooterT = {
     info: string;
     social: string;
     rights: string;
-
-    // ✅ главное: readonly
-    quickLinks: readonly string[];
+    privacyPolicy: string;
+    
+    // Массивы названий ссылок (берутся из lib/data.ts)
+    quickLinks: readonly string[]; 
     infoLinks: readonly string[];
 
     fullAddress: string;
@@ -22,12 +24,24 @@ type FooterT = {
 
 type Props = {
   t: FooterT;
+  lang: string;
 };
 
-export default function Footer({ t }: Props) {
+export default function Footer({ t, lang }: Props) {
+  
+  // 1. Пути для первой колонки "Ссылки" (совпадают с порядком в t.footer.quickLinks)
+  // Ожидаем порядок: Главная, Каталог, Блог, О нас, Контакты
+  const quickRoutes = ["", "products", "blog", "about", "contacts"];
+
+  // 2. Пути для второй колонки "Инфо" (совпадают с порядком в t.footer.infoLinks)
+  // Ожидаем порядок: Условия
+  const infoRoutes = ["terms"];
+
   return (
     <footer className="bg-[#111] text-white pt-16 md:pt-24 pb-10 text-sm border-t border-gray-800">
       <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-10 mb-16">
+        
+        {/* КОНТАКТЫ */}
         <div>
           <h4 className="font-bold text-white uppercase tracking-wider mb-6 border-b border-gray-700 pb-3 inline-block text-xs md:text-sm">
             {t.footer.contact}
@@ -41,9 +55,6 @@ export default function Footer({ t }: Props) {
                 <a href="tel:+994552677811" className="hover:text-white transition font-bold text-white">
                   (+994 55) 267 78 11
                 </a>
-                <a href="tel:+994509785682" className="hover:text-white transition">
-                  (+994 50) 978 56 82
-                </a>
               </div>
             </li>
 
@@ -56,36 +67,53 @@ export default function Footer({ t }: Props) {
           </ul>
         </div>
 
+        {/* ССЫЛКИ 1 (ОСНОВНАЯ НАВИГАЦИЯ) */}
         <div className="hidden md:block">
           <h4 className="font-bold text-white uppercase tracking-wider mb-6 border-b border-gray-700 pb-3 inline-block">
             {t.footer.links}
           </h4>
           <ul className="space-y-3 text-gray-400 text-xs md:text-sm">
-            {t.footer.quickLinks.map((x) => (
-              <li key={x}>
-                <a href="#" className="hover:text-amber-500 transition flex items-center gap-2 group">
-                  <ChevronRight size={12} className="group-hover:translate-x-1 transition" /> {x}
-                </a>
-              </li>
-            ))}
+            {t.footer.quickLinks.map((label, i) => {
+              // Берем путь по индексу, если его нет — заглушка '#'
+              const path = quickRoutes[i] !== undefined ? `/${lang}/${quickRoutes[i]}` : '#';
+              
+              // Убираем двойные слеши, если путь пустой (для главной)
+              const href = path.replace(/\/$/, "") || "/";
+
+              return (
+                <li key={i}>
+                  <Link href={href} className="hover:text-amber-500 transition flex items-center gap-2 group">
+                    <ChevronRight size={12} className="group-hover:translate-x-1 transition" /> 
+                    {label}
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
         </div>
 
+        {/* ССЫЛКИ 2 (ИНФО / УСЛОВИЯ) */}
         <div className="hidden md:block">
           <h4 className="font-bold text-white uppercase tracking-wider mb-6 border-b border-gray-700 pb-3 inline-block">
             {t.footer.info}
           </h4>
           <ul className="space-y-3 text-gray-400 text-xs md:text-sm">
-            {t.footer.infoLinks.map((x) => (
-              <li key={x}>
-                <a href="#" className="hover:text-amber-500 transition flex items-center gap-2 group">
-                  <ChevronRight size={12} className="group-hover:translate-x-1 transition" /> {x}
-                </a>
-              </li>
-            ))}
+            {t.footer.infoLinks.map((label, i) => {
+               const path = infoRoutes[i] !== undefined ? `/${lang}/${infoRoutes[i]}` : '#';
+               
+               return (
+                <li key={i}>
+                  <Link href={path} className="hover:text-amber-500 transition flex items-center gap-2 group">
+                    <ChevronRight size={12} className="group-hover:translate-x-1 transition" /> 
+                    {label}
+                  </Link>
+                </li>
+               );
+            })}
           </ul>
         </div>
 
+        {/* СОЦСЕТИ И БРЕНД */}
         <div>
           <h4 className="font-bold text-white uppercase tracking-wider mb-6 border-b border-gray-700 pb-3 inline-block text-xs md:text-sm">
             {t.footer.social}
@@ -94,18 +122,24 @@ export default function Footer({ t }: Props) {
           <div className="flex gap-3 mb-8">
             <a
               href="#"
+              target="_blank"
+              rel="noopener noreferrer"
               className="w-10 h-10 bg-gray-800 flex items-center justify-center hover:bg-[#1877F2] hover:text-white transition rounded-lg text-gray-400 hover:-translate-y-1"
             >
               <Facebook size={20} />
             </a>
             <a
               href="#"
+              target="_blank"
+              rel="noopener noreferrer"
               className="w-10 h-10 bg-gray-800 flex items-center justify-center hover:bg-[#E4405F] hover:text-white transition rounded-lg text-gray-400 hover:-translate-y-1"
             >
               <Instagram size={20} />
             </a>
             <a
               href="#"
+              target="_blank"
+              rel="noopener noreferrer"
               className="w-10 h-10 bg-gray-800 flex items-center justify-center hover:bg-[#FF0000] hover:text-white transition rounded-lg text-gray-400 hover:-translate-y-1"
             >
               <Youtube size={20} />
@@ -121,9 +155,24 @@ export default function Footer({ t }: Props) {
         </div>
       </div>
 
+      {/* НИЖНЯЯ ПАНЕЛЬ С КОПИРАЙТОМ И ПОЛИТИКОЙ */}
       <div className="border-t border-gray-800 pt-8">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center text-[10px] md:text-xs text-gray-600 text-center md:text-left gap-3 md:gap-0 font-medium">
-          <p>&copy; 2026 MD Baku. {t.footer.rights}</p>
+        <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4 md:gap-0">
+          
+          {/* Копирайт */}
+          <div className="text-[10px] md:text-xs text-gray-600 font-medium text-center md:text-left">
+            <p>&copy; 2026 MD Baku. {t.footer.rights}</p>
+          </div>
+
+          {/* Ссылка на Политику Конфиденциальности */}
+          <Link 
+            href={`/${lang}/privacy`} 
+            className="flex items-center gap-2 text-[10px] md:text-xs font-bold text-gray-500 hover:text-amber-500 transition-colors uppercase tracking-wider"
+          >
+            <ShieldCheck size={14} />
+            {t.footer.privacyPolicy || "Privacy Policy"}
+          </Link>
+
         </div>
       </div>
     </footer>

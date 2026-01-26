@@ -33,7 +33,6 @@ export type ProductDetail = PublicProduct & {
 
 // --- ACTIONS ---
 
-// 1. Получение категорий для меню (Хедер)
 export async function getNavbarCategories(lang: Lang): Promise<CategoryNavT[]> {
   const { data: categories } = await supabaseAdmin
     .from("categories")
@@ -60,11 +59,18 @@ export async function getNavbarCategories(lang: Lang): Promise<CategoryNavT[]> {
   }));
 }
 
-// 2. Получение списка товаров (Каталог)
+// 👇 ОБНОВЛЕННАЯ ФУНКЦИЯ (ДОБАВЛЕН ПОИСК)
 export async function getPublicProducts(
   lang: Lang, 
   page: number = 1, 
-  categorySlug?: string
+  filters: {
+    categorySlug?: string;
+    minPrice?: number;
+    maxPrice?: number;
+    inStock?: boolean;
+    sort?: string; 
+    search?: string; // <--- Новое поле
+  }
 ): Promise<{ rows: PublicProduct[]; totalCount: number }> {
   const LIMIT = 12;
   const from = (page - 1) * LIMIT;
@@ -73,21 +79,53 @@ export async function getPublicProducts(
   // Базовый запрос
   let query = supabaseAdmin
     .from("products")
-    .select("id, slug, price, old_price, currency, in_stock, badge, category_id, popularity", { count: "exact" })
-    .eq("is_active", true)
-    .order("popularity", { ascending: false })
-    .order("id", { ascending: false });
+    .select("id, slug, price, old_price, currency, in_stock, badge, category_id, popularity, created_at", { count: "exact" })
+    .eq("is_active", true);
 
-  // Фильтр по категории
-  if (categorySlug) {
-    const { data: cat } = await supabaseAdmin.from("categories").select("id").eq("slug", categorySlug).single();
-    if (cat) {
-      query = query.eq("category_id", cat.id);
+  // 1. ПОИСК (Самый приоритетный фильтр)
+  if (filters.search && filters.search.trim().length > 0) {
+    // Ищем в таблице переводов совпадения по названию
+    const { data: foundIds } = await supabaseAdmin
+      .from("product_i18n")
+      .select("product_id")
+      .ilike("title", `%${filters.search}%`); // ilike = регистронезависимый поиск
+
+    if (foundIds && foundIds.length > 0) {
+      const ids = foundIds.map(f => f.product_id);
+      query = query.in("id", ids);
     } else {
-      // Если slug категории неверный, возвращаем пустоту
+      // Если искали, но ничего не нашли — сразу возвращаем пустоту
       return { rows: [], totalCount: 0 };
     }
   }
+
+  // 2. Фильтр по категории
+  if (filters.categorySlug) {
+    const { data: cat } = await supabaseAdmin.from("categories").select("id").eq("slug", filters.categorySlug).single();
+    if (cat) {
+      query = query.eq("category_id", cat.id);
+    } else {
+      return { rows: [], totalCount: 0 };
+    }
+  }
+
+  // 3. Фильтр по цене
+  if (filters.minPrice !== undefined) query = query.gte("price", filters.minPrice);
+  if (filters.maxPrice !== undefined) query = query.lte("price", filters.maxPrice);
+
+  // 4. Фильтр по наличию
+  if (filters.inStock) query = query.eq("in_stock", true);
+
+  // 5. Сортировка
+  switch (filters.sort) {
+    case "price_asc": query = query.order("price", { ascending: true }); break;
+    case "price_desc": query = query.order("price", { ascending: false }); break;
+    case "new": query = query.order("created_at", { ascending: false }); break;
+    case "popular":
+    default: query = query.order("popularity", { ascending: false }); break;
+  }
+  
+  query = query.order("id", { ascending: false });
 
   const { data: products, count, error } = await query.range(from, to);
 
@@ -125,9 +163,8 @@ export async function getPublicProducts(
   return { rows, totalCount: count || 0 };
 }
 
-// 3. Получение одного товара (Детальная страница)
+// 3. Получение одного товара (без изменений)
 export async function getPublicProductBySlug(slug: string, lang: Lang): Promise<ProductDetail | null> {
-  // А. Получаем сам товар (ОБЯЗАТЕЛЬНО проверяем is_active)
   const { data: product } = await supabaseAdmin
     .from("products")
     .select("id, slug, price, old_price, currency, in_stock, badge, category_id")
@@ -137,39 +174,27 @@ export async function getPublicProductBySlug(slug: string, lang: Lang): Promise<
 
   if (!product) return null;
 
-  // Б. Получаем Slug категории (нужен для корректного поиска похожих товаров)
   let categorySlug: string | undefined = undefined;
   let categoryTitle = lang === 'ru' ? 'Каталог' : 'Kataloq';
 
   if (product.category_id) {
-    // Грузим slug категории и её название
     const [catRow, catI18n] = await Promise.all([
        supabaseAdmin.from("categories").select("slug").eq("id", product.category_id).single(),
        supabaseAdmin.from("category_i18n").select("title").eq("category_id", product.category_id).eq("lang", lang).single()
     ]);
-    
     if (catRow.data) categorySlug = catRow.data.slug;
     if (catI18n.data) categoryTitle = catI18n.data.title;
   }
 
-  // В. Загружаем всё остальное параллельно
   const [i18nRes, mediaRes, relatedRes] = await Promise.all([
-    // Перевод товара
     supabaseAdmin.from("product_i18n").select("*").eq("product_id", product.id).eq("lang", lang).single(),
-    
-    // Картинки (сортируем по порядку)
     supabaseAdmin.from("product_media").select("url, kind").eq("product_id", product.id).order("sort_order"),
-    
-    // Похожие товары (фильтруем по slug категории, который получили выше!)
     categorySlug 
-      ? getPublicProducts(lang, 1, categorySlug) 
+      ? getPublicProducts(lang, 1, { categorySlug }) 
       : Promise.resolve({ rows: [] })
   ]);
 
-  // Г. Убираем сам товар из списка похожих
-  const related = (relatedRes.rows || [])
-    .filter(p => p.id !== product.id)
-    .slice(0, 4);
+  const related = (relatedRes.rows || []).filter(p => p.id !== product.id).slice(0, 4);
 
   return {
     id: product.id,
@@ -186,7 +211,88 @@ export async function getPublicProductBySlug(slug: string, lang: Lang): Promise<
     seo_desc: i18nRes.data?.seo_desc || null,
     category_title: categoryTitle,
     media: mediaRes.data || [],
-    image: mediaRes.data?.[0]?.url || null, // Главное фото для превью
+    image: mediaRes.data?.[0]?.url || null,
     related_products: related
   };
+}
+
+// --- НОВЫЕ ФУНКЦИИ ДЛЯ КОЛЛЕКЦИЙ ---
+
+// 1. Получить список активных коллекций (чтобы знать их заголовки)
+export async function getPublicCollections(lang: Lang): Promise<{ key: string; title: string }[]> {
+  const { data } = await supabaseAdmin
+    .from("collections")
+    .select("key, title_ru, title_az, title_en")
+    .eq("is_active", true)
+    .order("sort_order");
+
+  if (!data) return [];
+
+  return data.map((col) => ({
+    key: col.key,
+    title: lang === "ru" ? col.title_ru : (lang === "az" ? col.title_az : col.title_en) || col.title_ru,
+  }));
+}
+
+// 2. Получить товары конкретной коллекции по её ключу (hits, new, recommend...)
+export async function getProductsByCollectionKey(
+  key: string,
+  lang: Lang,
+  limit: number = 10
+): Promise<PublicProduct[]> {
+  // А. Находим ID коллекции по ключу
+  const { data: collection } = await supabaseAdmin
+    .from("collections")
+    .select("id")
+    .eq("key", key)
+    .single();
+
+  if (!collection) return [];
+
+  // Б. Получаем товары, связанные с этой коллекцией
+  const { data: relations } = await supabaseAdmin
+    .from("collection_products")
+    .select("product_id")
+    .eq("collection_id", collection.id);
+
+  if (!relations || relations.length === 0) return [];
+
+  const productIds = relations.map((r) => r.product_id);
+
+  // В. Загружаем сами товары (аналогично getPublicProducts, но по списку ID)
+  const { data: products } = await supabaseAdmin
+    .from("products")
+    .select("id, slug, price, old_price, currency, in_stock, badge, category_id")
+    .in("id", productIds)
+    .eq("is_active", true)
+    .limit(limit);
+
+  if (!products || products.length === 0) return [];
+
+  // Г. Подгружаем картинки, переводы и категории
+  const finalIds = products.map((p) => p.id);
+  const categoryIds = Array.from(new Set(products.map(p => p.category_id).filter(Boolean)));
+
+  const [i18nRes, mediaRes, catI18nRes] = await Promise.all([
+    supabaseAdmin.from("product_i18n").select("product_id, title").in("product_id", finalIds).eq("lang", lang),
+    supabaseAdmin.from("product_media").select("product_id, url").in("product_id", finalIds).eq("is_main", true),
+    supabaseAdmin.from("category_i18n").select("category_id, title").in("category_id", categoryIds as number[]).eq("lang", lang)
+  ]);
+
+  const titleMap = new Map(i18nRes.data?.map(i => [i.product_id, i.title]));
+  const imageMap = new Map(mediaRes.data?.map(m => [m.product_id, m.url]));
+  const categoryMap = new Map(catI18nRes.data?.map(c => [c.category_id, c.title]));
+
+  return products.map((p) => ({
+    id: p.id,
+    slug: p.slug,
+    price: p.price,
+    old_price: p.old_price,
+    currency: p.currency,
+    in_stock: p.in_stock,
+    badge: p.badge,
+    title: titleMap.get(p.id) || "No Title",
+    image: imageMap.get(p.id) || null,
+    category_title: categoryMap.get(p.category_id) || (lang === 'ru' ? 'Каталог' : 'Kataloq')
+  }));
 }

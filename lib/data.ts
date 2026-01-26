@@ -5,10 +5,17 @@ type WhyKey = "warranty" | "original" | "shipping" | "installments";
 
 export const siteContent = {
   az: {
-    nav: ["Ana Səhifə", "Məhsullar", "İcarə", "Haqqımızda", "Əlaqə"],
+    nav: [
+      "Ana səhifə",
+      "Kataloq",
+      "Bloq",        // <-- Было "İcarə", стало "Bloq"
+      "Haqqımızda",
+      "Əlaqə",
+      "Qaydalar"     // <-- Добавил 6-й пункт
+    ],
 
     topbar: {
-      addressShort: "Bakı şəhəri, Nərimanov r., Əliyar Əliyev küç.",
+      addressShort: "Bakı, Nizami r., Azərbaymanapov küç. 31A",
     },
 
     header: {
@@ -46,16 +53,12 @@ export const siteContent = {
       },
     ],
 
-    categories: {
-      title: "Kateqoriyalar",
-      items: ["Qızıl Axtaranlar", "Sualtı Sistemlər", "Boşluq Detektorları", "Pinpointerlər"],
-    },
-
+    categories: { title: "Kateqoriyalar", items: ["Qızıl Axtaranlar", "Sualtı Sistemlər", "Boşluq Detektorları", "Pinpointerlər"] },
     sections: {
-      best: { title: "Ən çox satılanlar", cta: "Hamısına bax" },
-      deals: { title: "Sərfəli təkliflər", cta: "Kampaniyalar" },
-      columns: { new: "Yeni modellər", top: "Seçilənlər", rec: "Sizə uyğun" },
-      brandsLabel: "Rəsmi Zəmanət",
+        best: { title: "Ən çox satılanlar", cta: "Hamısına bax" },
+        deals: { title: "Sərfəli təkliflər", cta: "Kampaniyalar" },
+        columns: { new: "Yeni modellər", top: "Seçilənlər", rec: "Sizə uyğun" },
+        brandsLabel: "Rəsmi Zəmanət",
     },
 
     videoSection: {
@@ -82,6 +85,27 @@ export const siteContent = {
       names: ["NOKTA", "MINELAB", "GARRETT", "XP"],
     },
 
+    productPage: {
+      sku: "Məhsul kodu:",
+      inStock: "Anbarda var",
+      outOfStock: "Bitib",
+      addToCart: "Səbətə at",
+      buyNow: "İndi Al",
+      orderPhone: "Zəng et",
+      writeWhatsapp: "WhatsApp-da yaz",
+      description: "Təsvir",
+      specs: "Xüsusiyyətlər",
+      related: "Sizə maraqlı ola bilər",
+      garanty: "Rəsmi zəmanət",
+      garantyDesc: "İstehsalçıdan tam rəsmi zəmanət təqdim edirik.",
+      delivery: "Sürətli çatdırılma",
+      deliveryDesc: "Bakı və Azərbaycanın bölgələrinə çatdırılma.",
+      priceLabel: "Qiymət:",
+      currency: "₼",
+      viewAll: "Hamısına bax",
+      descriptionEmpty: "Məhsul haqqında məlumat yenilənir...",
+    },
+
     productCard: {
       freeShipping: "KARGO PULSUZ",
       orderBtn: "Sifariş",
@@ -101,9 +125,10 @@ export const siteContent = {
       social: "Sosial Media",
       createdBy: "Created by Araz Detector",
       rights: "Bütün hüquqlar qorunur.",
-      quickLinks: ["Online Mağaza", "Kampaniyalar", "İkinci Əl Cihazlar", "Video Təlimatlar"],
-      infoLinks: ["Haqqımızda", "Blog", "Zəmanət Şərtləri", "Geri Qaytarma"],
-      fullAddress: "Bakı şəhəri, Nərimanov r., Əliyar Əliyev küç. 1937, Ev 8",
+      privacyPolicy: "Məxfilik siyasəti",
+      quickLinks: ["Ana səhifə", "Kataloq", "Bloq", "Haqqımızda", "Əlaqə"],
+      infoLinks: ["Qaytarılma şərtləri"],
+      fullAddress: "Bakı ş., Nizami r., Azərbaymanapov küç. 31A (keçmiş 5)",
     },
 
     contact: {
@@ -117,58 +142,44 @@ export const siteContent = {
       cards: {
         phone: { title: "Telefon", value: "+994 55 267 78 11", sub: "10:00 — 20:00, hər gün" },
         whatsapp: { title: "WhatsApp", value: "Bizə yazın", sub: "Adətən 5–10 dəqiqəyə cavab veririk" },
-        office: { title: "Ofis", value: "Bakı, Nizami küç. 10", sub: "T/M, 2-ci mərtəbə (yaxınlıqda parkinq)" },
+        office: { title: "Ofis", value: "Bakı, Azərbaymanapov küç. 31A", sub: "(keçmiş 5), 2-ci mərtəbə" },
       },
 
       form: {
-        kicker: "Əlaqə forması",
-        title: "Bizə yazın",
-        hint: "Əlaqə məlumatlarını buraxın — zəng edək və ya WhatsApp-da cavab verək.",
-
-        nameLabel: "Ad",
-        namePlaceholder: "İvan",
-        phoneLabel: "Telefon",
-        phonePlaceholder: "+994 ...",
-        messageLabel: "Mesaj",
-        messagePlaceholder: "Məni bu model maraqlandırır... / Dərinlik üzrə məsləhət...",
-
-        submit: "Göndər",
-        sending: "Göndərilir…",
-        consent:
-          "“Göndər” düyməsinə basmaqla, əlaqə məlumatlarının geri dönüş üçün emalına razılıq verirsiniz.",
-
-        sentTitle: "Göndərildi",
-        sentDesc: "Mesajınızı aldıq və tezliklə sizinlə əlaqə saxlayacağıq.",
-        sendAgain: "Yenidən göndər",
+            kicker: "Əlaqə forması",
+            title: "Bizə yazın",
+            hint: "Əlaqə məlumatlarını buraxın — zəng edək və ya WhatsApp-da cavab verək.",
+            nameLabel: "Ad",
+            namePlaceholder: "İvan",
+            phoneLabel: "Telefon",
+            phonePlaceholder: "+994 ...",
+            messageLabel: "Mesaj",
+            messagePlaceholder: "Məni bu model maraqlandırır... / Dərinlik üzrə məsləhət...",
+            submit: "Göndər",
+            sending: "Göndərilir…",
+            consent: "“Göndər” düyməsinə basmaqla, əlaqə məlumatlarının geri dönüş üçün emalına razılıq verirsiniz.",
+            sentTitle: "Göndərildi",
+            sentDesc: "Mesajınızı aldıq və tezliklə sizinlə əlaqə saxlayacağıq.",
+            sendAgain: "Yenidən göndər",
       },
-
-      map: {
-        label: "Məkan",
-        title: "Şəhərin mərkəzində ofis",
-        route: "Marşrut",
-      },
-
-      socials: {
-        kicker: "Sosial şəbəkələr",
-        title: "Əlaqədəyik",
-        desc: "Harada rahatdırsa, oradan yazın — cavab verək.",
-        instagram: "Instagram",
-        facebook: "Facebook",
-        whatsapp: "WhatsApp",
-      },
-
-      bottom: {
-        title: "Tez. Dəqiq. Məzmunlu.",
-        subtitle: "MD BAKU",
-      },
+      map: { label: "Məkan", title: "Şəhərin mərkəzində ofis", route: "Marşrut" },
+      socials: { kicker: "Sosial şəbəkələr", title: "Əlaqədəyik", desc: "Harada rahatdırsa, oradan yazın — cavab verək.", instagram: "Instagram", facebook: "Facebook", whatsapp: "WhatsApp" },
+      bottom: { title: "Tez. Dəqiq. Məzmunlu.", subtitle: "MD BAKU" },
     },
   },
 
   ru: {
-    nav: ["Главная", "Продукты", "Аренда", "О нас", "Контакты"],
+    nav: [
+      "Главная",
+      "Каталог",
+      "Блог",        // <-- Было "Аренда", стало "Блог"
+      "О компании",
+      "Контакты",
+      "Условия"      // <-- Добавил 6-й пункт
+    ],
 
     topbar: {
-      addressShort: "г. Баку, Нараимановский р-н, ул. Алияра Алиева",
+      addressShort: "г. Баку, Низаминский р-н, ул. Азерманапова 31A",
     },
 
     header: {
@@ -206,16 +217,12 @@ export const siteContent = {
       },
     ],
 
-    categories: {
-      title: "Категории",
-      items: ["Золотоискатели", "Подводные системы", "Детекторы пустот", "Пинпоинтеры"],
-    },
-
+    categories: { title: "Категории", items: ["Золотоискатели", "Подводные системы", "Детекторы пустот", "Пинпоинтеры"] },
     sections: {
-      best: { title: "Хиты продаж", cta: "Смотреть все" },
-      deals: { title: "Выгодные предложения", cta: "Акции" },
-      columns: { new: "Новинки", top: "Выбор клиентов", rec: "Рекомендуем" },
-      brandsLabel: "Официальная гарантия",
+        best: { title: "Хиты продаж", cta: "Смотреть все" },
+        deals: { title: "Выгодные предложения", cta: "Акции" },
+        columns: { new: "Новинки", top: "Выбор клиентов", rec: "Рекомендуем" },
+        brandsLabel: "Официальная гарантия",
     },
 
     videoSection: {
@@ -242,11 +249,33 @@ export const siteContent = {
       names: ["NOKTA", "MINELAB", "GARRETT", "XP"],
     },
 
+    productPage: {
+      sku: "Артикул:",
+      inStock: "В наличии",
+      outOfStock: "Нет в наличии",
+      addToCart: "В корзину",
+      buyNow: "Купить",
+      orderPhone: "Заказать",
+      writeWhatsapp: "Написать в WhatsApp",
+      description: "Описание",
+      specs: "Характеристики",
+      related: "Вам может понравиться",
+      garanty: "Официальная гарантия",
+      garantyDesc: "Предоставляем полную официальную гарантию производителя.",
+      delivery: "Быстрая доставка",
+      deliveryDesc: "Доставка по Баку и регионам Азербайджана.",
+      priceLabel: "Цена:",
+      currency: "₼",
+      viewAll: "Смотреть все",
+      descriptionEmpty: "Описание товара готовится к публикации...",
+    },
+
     productCard: {
       freeShipping: "БЕСПЛАТНАЯ ДОСТАВКА",
       orderBtn: "Заказать",
       waText: "Здравствуйте, интересует товар:",
     },
+
     notFound: {
         title: "Сигнал потерян (Signal Lost)",
         desc: "Страница не найдена или больше не существует. Проверьте адрес.",
@@ -261,9 +290,10 @@ export const siteContent = {
       social: "Соцсети",
       createdBy: "Created by Araz Detector",
       rights: "Все права защищены.",
-      quickLinks: ["Интернет-магазин", "Акции", "Б/У приборы", "Видео-инструкции"],
-      infoLinks: ["О нас", "Блог", "Гарантия", "Возврат"],
-      fullAddress: "г. Баку, Нараимановский р-н, ул. Алияра Алиева 1937, дом 8",
+      privacyPolicy: "Политика конфиденциальности",
+      quickLinks: ["Главная", "Каталог", "Блог", "О компании", "Контакты"],
+      infoLinks: ["Условия возврата"],
+      fullAddress: "г. Баку, Низаминский р-н, ул. Азерманапова 31A (бывшая 5)",
     },
     contact: {
       hero: {
@@ -276,7 +306,7 @@ export const siteContent = {
       cards: {
         phone: { title: "Телефон", value: "+994 55 267 78 11", sub: "10:00 — 20:00, без выходных" },
         whatsapp: { title: "WhatsApp", value: "Написать нам", sub: "Отвечаем обычно за 5–10 минут" },
-        office: { title: "Офис", value: "Баку, ул. Низами 10", sub: "ТЦ, 2 этаж (парковка рядом)" },
+        office: { title: "Офис", value: "Баку, ул. Азерманапова 31A", sub: "(бывшая 5), 2 этаж" },
       },
 
       form: {
