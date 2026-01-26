@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState } from "react";
 import { sendToTelegram } from "@/lib/actions/contacts";
 import { useParams } from "next/navigation";
 import {
@@ -12,13 +12,34 @@ import {
   CheckCircle2,
   Instagram,
   Facebook,
+  Youtube,
 } from "lucide-react";
 
 import { siteContent, Lang } from "@/lib/data";
 
 /* eslint-disable @next/next/no-img-element */
 
-// --- TYPES & UI COMPONENTS ---
+// --- ICONS ---
+
+// TikTok ikonu
+const TiktokIcon = ({ size = 20, className = "" }: { size?: number; className?: string }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
+  </svg>
+);
+
+// --- UI COMPONENTS ---
 
 const SectionHeading = ({ title, subtitle }: { title: string; subtitle: string }) => (
   <div className="mb-10 md:mb-14">
@@ -105,11 +126,13 @@ const SocialButton = ({
   href,
   label,
   variant = "dark",
+  className = "",
 }: {
   icon: any;
   href: string;
   label: string;
-  variant?: "dark" | "instagram" | "facebook" | "whatsapp";
+  variant?: "dark" | "instagram" | "facebook" | "whatsapp" | "youtube" | "tiktok";
+  className?: string;
 }) => {
   const styles =
     variant === "instagram"
@@ -118,6 +141,10 @@ const SocialButton = ({
       ? "bg-[#1877F2]"
       : variant === "whatsapp"
       ? "bg-[#25D366]"
+      : variant === "youtube"
+      ? "bg-[#FF0000]"
+      : variant === "tiktok"
+      ? "bg-[#000000]"
       : "bg-gray-900";
 
   return (
@@ -134,6 +161,7 @@ const SocialButton = ({
         "hover:brightness-110 hover:-translate-y-[1px]",
         "active:translate-y-0",
         styles,
+        className
       ].join(" ")}
       rel="noreferrer"
     >
@@ -142,21 +170,28 @@ const SocialButton = ({
     </a>
   );
 };
+
 // --- MAIN PAGE COMPONENT ---
 
 export default function ContactPage() {
   const params = useParams();
-  // Безопасное получение языка
   const lang = (params?.lang as Lang) || "ru";
 
   const t = useMemo(() => {
     return (siteContent as any)[lang] ?? siteContent.ru;
   }, [lang]);
 
-  // Ссылки
+  // Sosial Linklər
   const instagramUrl = "https://www.instagram.com/detektorbaku";
-  const facebookUrl = "https://facebook.com";
-  const mapRouteUrl = "https://www.google.com/maps/dir//Baku,+Azerbaijan"; 
+  const facebookUrl = "https://www.facebook.com/people/DetektorBaku/61582712875786/";
+  const youtubeUrl = "https://www.youtube.com/@detektorbaku";
+  const tiktokUrl = "https://www.tiktok.com/@detektorbaku";
+  
+  // Dəqiq marşrut linki: Azər Manafov 31A
+  const mapRouteUrl = "https://www.google.com/maps/dir//MDBAKU,+31A+Azar+Manafov+St,+Baku+1002,+Azerbaijan/@40.4177795,49.9289162,18z/data=!4m8!4m7!1m0!1m5!1m1!1s0x4030637945f2f07f:0x5968ce4d063f8051!2m2!1d49.9305183!2d40.4172047?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoKLDEwMDc5MjA2N0gBUAM%3D";
+
+  // Google Maps Embed Linki (Dəqiq ünvan üçün 'q' parametri ilə)
+  const googleMapsEmbedUrl = "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d602.0431254856037!2d49.93032816867937!3d40.41738655057274!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4030637945f2f07f%3A0x5968ce4d063f8051!2sMDBAKU!5e0!3m2!1sen!2skz!4v1769469475287!5m2!1sen!2skz";
 
   const [formStatus, setFormStatus] = useState<"idle" | "sending" | "sent">("idle");
 
@@ -345,8 +380,10 @@ export default function ContactPage() {
           <div className="lg:col-span-5 flex flex-col gap-5">
             {/* MAP */}
             <div className="relative overflow-hidden rounded-3xl border border-gray-200/70 bg-white shadow-[0_24px_70px_-55px_rgba(0,0,0,0.45)] min-h-[320px]">
+              
+              {/* Google Maps Iframe with Azər Manafov 31A query */}
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3039.428674403756!2d49.86709241539662!3d40.40926167936601!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x40307d40a880b8bd%3A0x981d3f9f3b8b6e6!2sBaku%2C%20Azerbaijan!5e0!3m2!1sen!2s!4v1646738927426!5m2!1sen!2s"
+                src={googleMapsEmbedUrl}
                 className="absolute inset-0 w-full h-full grayscale-[0.9] contrast-125"
                 style={{ border: 0 }}
                 allowFullScreen
@@ -393,7 +430,8 @@ export default function ContactPage() {
                 <div className="mt-2 text-sm text-gray-600">{t.contact.socials.desc}</div>
               </div>
 
-              <div className="mt-5 grid grid-cols-3 gap-3">
+              {/* Grid Layout for Socials */}
+              <div className="mt-5 grid grid-cols-2 gap-3">
                 <SocialButton
                   icon={Instagram}
                   href={instagramUrl}
@@ -407,10 +445,24 @@ export default function ContactPage() {
                   variant="facebook"
                 />
                 <SocialButton
+                  icon={TiktokIcon}
+                  href={tiktokUrl}
+                  label="TikTok"
+                  variant="tiktok"
+                />
+                <SocialButton
+                  icon={Youtube}
+                  href={youtubeUrl}
+                  label="YouTube"
+                  variant="youtube"
+                />
+                {/* WhatsApp Full Width */}
+                <SocialButton
                   icon={MessageCircle}
                   href="https://wa.me/994552677811"
                   label={t.contact.socials.whatsapp}
                   variant="whatsapp"
+                  className="col-span-2"
                 />
               </div>
             </div>

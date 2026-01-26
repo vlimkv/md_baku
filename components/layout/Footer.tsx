@@ -5,6 +5,24 @@ import { Phone, MapPin, Facebook, Instagram, Youtube, ChevronRight, ShieldCheck 
 
 /* eslint-disable @next/next/no-img-element */
 
+// TikTok ikonu üçün xüsusi komponent (lucide-react-da olmaya bilər)
+const TiktokIcon = ({ size = 20, className = "" }: { size?: number; className?: string }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
+  </svg>
+);
+
 type FooterT = {
   footer: {
     contact: string;
@@ -29,12 +47,10 @@ type Props = {
 
 export default function Footer({ t, lang }: Props) {
   
-  // 1. Пути для первой колонки "Ссылки" (совпадают с порядком в t.footer.quickLinks)
-  // Ожидаем порядок: Главная, Каталог, Блог, О нас, Контакты
+  // 1. Пути для первой колонки "Ссылки"
   const quickRoutes = ["", "products", "blog", "about", "contacts"];
 
-  // 2. Пути для второй колонки "Инфо" (совпадают с порядком в t.footer.infoLinks)
-  // Ожидаем порядок: Условия
+  // 2. Пути для второй колонки "Инфо"
   const infoRoutes = ["terms"];
 
   return (
@@ -74,10 +90,7 @@ export default function Footer({ t, lang }: Props) {
           </h4>
           <ul className="space-y-3 text-gray-400 text-xs md:text-sm">
             {t.footer.quickLinks.map((label, i) => {
-              // Берем путь по индексу, если его нет — заглушка '#'
               const path = quickRoutes[i] !== undefined ? `/${lang}/${quickRoutes[i]}` : '#';
-              
-              // Убираем двойные слеши, если путь пустой (для главной)
               const href = path.replace(/\/$/, "") || "/";
 
               return (
@@ -119,28 +132,47 @@ export default function Footer({ t, lang }: Props) {
             {t.footer.social}
           </h4>
 
-          <div className="flex gap-3 mb-8">
+          <div className="flex gap-3 mb-8 flex-wrap">
+            {/* Facebook */}
             <a
-              href="#"
+              href="https://www.facebook.com/people/DetektorBaku/61582712875786/"
               target="_blank"
               rel="noopener noreferrer"
               className="w-10 h-10 bg-gray-800 flex items-center justify-center hover:bg-[#1877F2] hover:text-white transition rounded-lg text-gray-400 hover:-translate-y-1"
+              aria-label="Facebook"
             >
               <Facebook size={20} />
             </a>
+
+            {/* Instagram */}
             <a
               href="https://www.instagram.com/detektorbaku"
               target="_blank"
               rel="noopener noreferrer"
               className="w-10 h-10 bg-gray-800 flex items-center justify-center hover:bg-[#E4405F] hover:text-white transition rounded-lg text-gray-400 hover:-translate-y-1"
+              aria-label="Instagram"
             >
               <Instagram size={20} />
             </a>
+
+            {/* TikTok */}
             <a
-              href="#"
+              href="https://www.tiktok.com/@detektorbaku"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-10 h-10 bg-gray-800 flex items-center justify-center hover:bg-[#000000] hover:text-white transition rounded-lg text-gray-400 hover:-translate-y-1"
+              aria-label="TikTok"
+            >
+              <TiktokIcon size={20} />
+            </a>
+
+            {/* YouTube */}
+            <a
+              href="https://www.youtube.com/@detektorbaku"
               target="_blank"
               rel="noopener noreferrer"
               className="w-10 h-10 bg-gray-800 flex items-center justify-center hover:bg-[#FF0000] hover:text-white transition rounded-lg text-gray-400 hover:-translate-y-1"
+              aria-label="YouTube"
             >
               <Youtube size={20} />
             </a>
@@ -155,16 +187,14 @@ export default function Footer({ t, lang }: Props) {
         </div>
       </div>
 
-      {/* НИЖНЯЯ ПАНЕЛЬ С КОПИРАЙТОМ И ПОЛИТИКОЙ */}
+      {/* НИЖНЯЯ ПАНЕЛЬ */}
       <div className="border-t border-gray-800 pt-8">
         <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4 md:gap-0">
           
-          {/* Копирайт */}
           <div className="text-[10px] md:text-xs text-gray-600 font-medium text-center md:text-left">
             <p>&copy; 2026 MD Baku. {t.footer.rights}</p>
           </div>
 
-          {/* Ссылка на Политику Конфиденциальности */}
           <Link 
             href={`/${lang}/privacy`} 
             className="flex items-center gap-2 text-[10px] md:text-xs font-bold text-gray-500 hover:text-amber-500 transition-colors uppercase tracking-wider"

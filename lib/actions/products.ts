@@ -18,6 +18,8 @@ export type AdminProductRow = {
   badge: string | null;
   popularity: number;
   created_at: string;
+  // 👇 1. ДОБАВЛЯЕМ ЭТО ПОЛЕ
+  category_id: number | null; 
   title_ru?: string;
   title_az?: string;
   title_en?: string;
@@ -127,7 +129,8 @@ export async function adminListProducts(q?: string, page: number = 1, limit: num
   const query = (q ?? "").trim().toLowerCase();
   const from = (page - 1) * limit;
   const to = from + limit - 1;
-  const selectFields = "id,slug,category_id,price,old_price,currency,in_stock,is_active,badge,popularity,created_at";
+  
+  const selectFields = "id,slug,price,old_price,currency,in_stock,is_active,badge,popularity,created_at,category_id";
 
   // --- СЦЕНАРИЙ 1: ПРОСТОЙ СПИСОК (БЕЗ ПОИСКА ТЕКСТА) ---
   if (!query) {

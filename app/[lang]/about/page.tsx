@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import { 
   Award, ShieldCheck, Factory, Tent, MapPin, 
-  CheckCircle2, ChevronLeft, Building2 
+  CheckCircle2, Building2 
 } from "lucide-react";
 import type { Lang } from "@/lib/data";
 
@@ -45,7 +44,7 @@ const CONTENT = {
         icon: Tent,
         title: "Туризм и Outdoor",
         text: "Туристическое снаряжение, аксессуары для полевых работ и всё необходимое для комфортного поиска."
-      }
+      },
     ],
     values: {
       title: "Наши приоритеты",
@@ -53,7 +52,8 @@ const CONTENT = {
     },
     address: {
       label: "Наш адрес:",
-      text: "Азербайджан, город Баку, Низаминский район, улица Азерманапова, 31A (бывшая 5)"
+      // Düzəliş edildi:
+      text: "Азербайджан, город Баку, Низаминский район, улица Азера Манафова, 31A (бывшая 5)"
     }
   },
   az: {
@@ -96,7 +96,8 @@ const CONTENT = {
     },
     address: {
       label: "Ünvanımız:",
-      text: "Azərbaycan, Bakı şəhəri, Nizami rayonu, Azərbaymanapov küçəsi 31A (keçmiş 5)"
+      // Düzəliş edildi:
+      text: "Azərbaycan, Bakı şəhəri, Nizami rayonu, Azər Manafov küçəsi 31A (keçmiş 5)"
     }
   }
 };

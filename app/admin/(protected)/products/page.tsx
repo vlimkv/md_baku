@@ -13,37 +13,36 @@ import {
 import { Pagination } from "@/components/admin/pagination";
 import { ProductCreateForm } from "@/components/admin/product-create-form";
 import { CategoryCreateForm } from "@/components/admin/category-create-form";
+import { CategoryManager } from "@/components/admin/category-manager";
+import { CategoryFilter } from "@/components/admin/category-filter";
 import { 
   ToggleActiveBtn, 
   ToggleStockBtn, 
   DeleteBtn 
 } from "@/components/admin/submit-buttons";
 
-// 1. ИМПОРТ ФИЛЬТРА
-import { CategoryFilter } from "@/components/admin/category-filter";
-
-// 2. Обновляем типы params
+// Типы параметров URL
 type SP = Promise<{ q?: string; page?: string; category?: string }>;
 
 export default async function ProductsListPage({ searchParams }: { searchParams?: SP }) {
   const sp = (await searchParams) ?? {};
   const q = sp.q ?? "";
   const page = Number(sp.page) || 1;
-  const categoryId = sp.category; // Получаем ID категории из URL
+  const categoryId = sp.category; 
   const LIMIT = 20;
 
-  // 3. Передаем categoryId в запрос
-  const [productsData, collectionsList, categoriesRaw] = await Promise.all([
+  // 1. Загружаем данные
+  const [productsData, collectionsList, categoriesFull] = await Promise.all([
     adminListProducts(q, page, LIMIT, categoryId), 
     adminGetCollections(),
-    adminListCategories()
+    adminListCategories() 
   ]);
 
   const { rows, totalCount } = productsData;
   const totalPages = Math.ceil(totalCount / LIMIT);
 
-  // Форматируем категории для селектов
-  const categoriesForSelect = categoriesRaw.map(c => ({
+  // 2. Форматируем категории
+  const categoriesForSelect = categoriesFull.map(c => ({
     id: c.id,
     slug: c.slug,
     title: c.title_ru || c.slug
@@ -54,8 +53,6 @@ export default async function ProductsListPage({ searchParams }: { searchParams?
         
         {/* --- HEADER --- */}
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 sm:gap-6">
-          
-          {/* Title */}
           <div className="space-y-1">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg shadow-amber-500/20">
@@ -68,16 +65,10 @@ export default async function ProductsListPage({ searchParams }: { searchParams?
             </p>
           </div>
 
-          {/* Search & Filter Group */}
           <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
-            
-            {/* 4. ФИЛЬТР ПО КАТЕГОРИЯМ */}
             <CategoryFilter categories={categoriesForSelect} />
-
             <form className="relative flex-1 sm:w-80 group" action="/admin/products" method="get">
-              {/* Сохраняем категорию при поиске */}
               {categoryId && <input type="hidden" name="category" value={categoryId} />}
-              
               <input type="hidden" name="page" value="1" />
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5 group-focus-within:text-amber-600 transition-colors" />
               <input
@@ -91,22 +82,33 @@ export default async function ProductsListPage({ searchParams }: { searchParams?
           </div>
         </div>
 
-        {/* --- FORMS --- */}
-        <div className="space-y-4">
+        {/* --- MANAGEMENT SECTION --- */}
+        {/* Здесь убрал Grid, теперь просто вертикальный стек с отступами */}
+        <div className="space-y-6">
+           
+           {/* 1. Создание товара */}
            <ProductCreateForm collections={collectionsList} categories={categoriesForSelect} />
+           
+           {/* 2. Создание категории (На всю ширину) */}
            <CategoryCreateForm />
+
+           {/* 3. Управление категориями (На всю ширину) */}
+           <CategoryManager categories={categoriesFull} />
+           
         </div>
 
-        {/* --- DATA DISPLAY --- */}
-        <div className="space-y-4 mt-8">
+        <div className="h-px bg-slate-200 my-8" />
+
+        {/* --- PRODUCTS TABLE --- */}
+        <div className="space-y-4">
           
           {/* DESKTOP TABLE */}
           <div className="hidden md:block bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-            <table className="w-full text-left">
+            <table className="w-full text-left table-fixed">
               <thead>
                 <tr className="bg-slate-50/80 border-b border-slate-200 text-[10px] uppercase tracking-widest text-slate-400 font-bold">
-                  <th className="px-6 py-4 w-16">ID</th>
-                  <th className="px-6 py-4">Товар</th>
+                  <th className="px-6 py-4 w-20">ID</th>
+                  <th className="px-6 py-4 w-[40%]">Товар</th>
                   <th className="px-6 py-4">Цена</th>
                   <th className="px-6 py-4">Статус</th>
                   <th className="px-6 py-4 text-right">Управление</th>
@@ -115,51 +117,64 @@ export default async function ProductsListPage({ searchParams }: { searchParams?
               <tbody className="divide-y divide-slate-100">
                 {rows.map((r) => (
                   <tr key={r.id} className="group hover:bg-slate-50 transition-colors">
-                    <td className="px-6 py-4 text-xs font-mono text-slate-400">#{r.id}</td>
+                    <td className="px-6 py-4 align-top text-xs font-mono text-slate-400">
+                        #{r.id}
+                    </td>
                     
-                    <td className="px-6 py-4">
-                      <div className="text-sm font-bold text-slate-900 group-hover:text-amber-600 transition-colors">
+                    <td className="px-6 py-4 align-top">
+                      {r.category_id && (
+                        <div className="mb-1.5">
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-indigo-50 text-indigo-600 border border-indigo-100">
+                                {categoriesFull.find(c => c.id === r.category_id)?.title_ru || 'Категория'}
+                            </span>
+                        </div>
+                      )}
+                      
+                      <div className="text-sm font-bold text-slate-900 group-hover:text-amber-600 transition-colors line-clamp-2 leading-snug">
                         {r.title_ru || r.title_az || "Без названия"}
                       </div>
-                      <div className="flex items-center gap-2 mt-0.5">
-                        <span className="text-[10px] text-slate-400 font-mono">{r.slug}</span>
+                      
+                      <div className="text-[10px] text-slate-400 font-mono mt-1 truncate">
+                        {r.slug}
                       </div>
                     </td>
 
-                    <td className="px-6 py-4">
-                      <div className="text-sm font-bold text-slate-900">{Number(r.price).toFixed(2)} ₼</div>
+                    <td className="px-6 py-4 align-top">
+                      <div className="text-sm font-bold text-slate-900 whitespace-nowrap">{Number(r.price).toFixed(2)} ₼</div>
                       {r.old_price && <div className="text-[10px] text-slate-400 line-through">{Number(r.old_price).toFixed(2)} ₼</div>}
                     </td>
                     
-                    <td className="px-6 py-4">
-                      <div className="flex flex-col items-start gap-1.5">
-                         <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider border ${r.is_active ? 'bg-emerald-50 border-emerald-100 text-emerald-700' : 'bg-slate-50 border-slate-100 text-slate-400'}`}>
-                            {r.is_active ? 'АКТИВЕН' : 'СКРЫТ'}
-                         </span>
-                         <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider border ${r.in_stock ? 'bg-blue-50 border-blue-100 text-blue-700' : 'bg-rose-50 border-rose-100 text-rose-700'}`}>
-                            {r.in_stock ? 'В НАЛИЧИИ' : 'НЕТ'}
+                    <td className="px-6 py-4 align-top">
+                      <div className="flex flex-col items-start gap-2">
+                         <div className="flex items-center gap-1.5">
+                            <div className={`w-2 h-2 rounded-full ${r.is_active ? 'bg-emerald-500' : 'bg-slate-300'}`} />
+                            <span className={`text-[10px] font-bold uppercase ${r.is_active ? 'text-emerald-700' : 'text-slate-400'}`}>
+                                {r.is_active ? 'Активен' : 'Скрыт'}
+                            </span>
+                         </div>
+                         <span className={`text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border ${r.in_stock ? 'border-blue-100 text-blue-600 bg-blue-50' : 'border-rose-100 text-rose-600 bg-rose-50'}`}>
+                            {r.in_stock ? 'В наличии' : 'Нет'}
                          </span>
                       </div>
                     </td>
 
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <Link href={`/admin/products/${r.id}`} className="p-2 rounded-lg bg-slate-50 border border-slate-200 text-slate-500 hover:bg-amber-50 hover:text-amber-600 hover:border-amber-200 transition-all">
-                          <Pencil size={14} />
+                    <td className="px-6 py-4 align-top text-right">
+                      <div className="flex items-center justify-end gap-1">
+                        <Link href={`/admin/products/${r.id}`} className="p-2 rounded-lg text-slate-400 hover:bg-amber-50 hover:text-amber-600 transition-all">
+                          <Pencil size={16} />
                         </Link>
                         
-                        <form action={async () => { "use server"; await adminToggleActive(r.id); }}>
-                          <ToggleActiveBtn isActive={r.is_active} />
-                        </form>
-                        <form action={async () => { "use server"; await adminToggleStock(r.id); }}>
-                          <ToggleStockBtn inStock={r.in_stock} />
-                        </form>
-                        
-                        <div className="w-px h-4 bg-slate-200 mx-1"></div>
-                        
-                        <form action={async () => { "use server"; await adminDeleteProduct(r.id); }}>
-                          <DeleteBtn />
-                        </form>
+                        <div className="flex gap-1 border-l border-slate-100 pl-1 ml-1">
+                            <form action={async () => { "use server"; await adminToggleActive(r.id); }}>
+                                <ToggleActiveBtn isActive={r.is_active} />
+                            </form>
+                            <form action={async () => { "use server"; await adminToggleStock(r.id); }}>
+                                <ToggleStockBtn inStock={r.in_stock} />
+                            </form>
+                            <form action={async () => { "use server"; await adminDeleteProduct(r.id); }}>
+                                <DeleteBtn />
+                            </form>
+                        </div>
                       </div>
                     </td>
                   </tr>
@@ -171,48 +186,56 @@ export default async function ProductsListPage({ searchParams }: { searchParams?
           {/* MOBILE CARDS */}
           <div className="md:hidden grid grid-cols-1 gap-4">
              {rows.map((r) => (
-               <div key={r.id} className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm flex flex-col gap-4 relative overflow-hidden">
-                  <div className={`absolute left-0 top-0 bottom-0 w-1.5 ${r.is_active ? 'bg-emerald-500' : 'bg-slate-200'}`} />
+               <div key={r.id} className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col gap-3 relative overflow-hidden">
+                  <div className={`absolute left-0 top-0 bottom-0 w-1 ${r.is_active ? 'bg-emerald-500' : 'bg-slate-300'}`} />
 
-                  <div className="pl-2 flex justify-between items-start">
-                     <div>
-                        <div className="text-[10px] font-mono text-slate-400 mb-0.5">#{r.id} • {r.slug}</div>
-                        <h3 className="text-base font-bold text-slate-900 leading-tight pr-4">
-                          {r.title_ru || r.title_az || <span className="italic text-slate-400">Без названия</span>}
-                        </h3>
+                  <div className="pl-3">
+                     <div className="flex justify-between items-start mb-2">
+                        <div className="flex items-center gap-2 flex-wrap">
+                            <span className="text-[10px] font-mono text-slate-400 bg-slate-100 px-1.5 rounded">#{r.id}</span>
+                            {r.category_id && (
+                                <span className="text-[9px] font-bold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded uppercase border border-indigo-100">
+                                    {categoriesFull.find(c => c.id === r.category_id)?.title_ru}
+                                </span>
+                            )}
+                        </div>
+                        <div className="text-right">
+                            <span className="block text-base font-black text-slate-900">{Number(r.price).toFixed(2)} ₼</span>
+                        </div>
                      </div>
-                     <div className="text-right">
-                        <span className="block text-lg font-black text-amber-600">{Number(r.price).toFixed(2)} ₼</span>
-                        {r.old_price && <span className="text-xs text-slate-400 line-through">{Number(r.old_price).toFixed(2)} ₼</span>}
-                     </div>
+
+                     <h3 className="text-sm font-bold text-slate-900 leading-snug mb-1 pr-2">
+                        {r.title_ru || r.title_az || <span className="italic text-slate-400">Без названия</span>}
+                     </h3>
+                     <div className="text-[10px] text-slate-400 font-mono truncate max-w-[200px]">{r.slug}</div>
                   </div>
 
-                  <div className="pl-2 pt-3 mt-auto border-t border-slate-100 grid grid-cols-4 gap-2">
-                     <Link href={`/admin/products/${r.id}`} className="flex flex-col items-center justify-center p-2 rounded-xl bg-amber-50 text-amber-700 active:scale-95 transition-transform">
-                        <Pencil size={20} />
-                        <span className="text-[9px] font-bold mt-1 uppercase">Ред.</span>
+                  <div className="pl-3 pt-3 mt-auto border-t border-slate-100 flex items-center justify-between gap-2">
+                     <Link href={`/admin/products/${r.id}`} className="flex-1 flex items-center justify-center py-2 rounded-lg bg-slate-50 text-slate-600 text-xs font-bold uppercase hover:bg-slate-100 transition">
+                        <Pencil size={14} className="mr-2" /> Ред.
                      </Link>
 
-                     <form action={async () => { "use server"; await adminToggleActive(r.id); }} className="w-full">
-                        <ToggleActiveBtn isActive={r.is_active} mobile />
-                     </form>
-
-                     <form action={async () => { "use server"; await adminToggleStock(r.id); }} className="w-full">
-                        <ToggleStockBtn inStock={r.in_stock} mobile />
-                     </form>
-
-                     <form action={async () => { "use server"; await adminDeleteProduct(r.id); }} className="w-full">
-                        <DeleteBtn mobile />
-                     </form>
+                     <div className="flex gap-1">
+                        <form action={async () => { "use server"; await adminToggleActive(r.id); }}>
+                            <ToggleActiveBtn isActive={r.is_active} mobile />
+                        </form>
+                        <form action={async () => { "use server"; await adminToggleStock(r.id); }}>
+                            <ToggleStockBtn inStock={r.in_stock} mobile />
+                        </form>
+                        <form action={async () => { "use server"; await adminDeleteProduct(r.id); }}>
+                            <DeleteBtn mobile />
+                        </form>
+                     </div>
                   </div>
                </div>
              ))}
           </div>
 
           {rows.length === 0 && (
-            <div className="text-center py-20 text-slate-400">
+            <div className="text-center py-20 text-slate-400 bg-white rounded-3xl border border-slate-200 border-dashed">
                <Package size={48} className="mx-auto mb-4 opacity-20" />
-               <p className="font-medium">В этой категории нет товаров</p>
+               <p className="font-medium">Товары не найдены</p>
+               <p className="text-xs mt-1">Попробуйте изменить фильтры или добавить новый товар</p>
             </div>
           )}
 

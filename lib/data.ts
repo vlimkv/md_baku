@@ -8,14 +8,14 @@ export const siteContent = {
     nav: [
       "Ana səhifə",
       "Kataloq",
-      "Bloq",        // <-- Было "İcarə", стало "Bloq"
+      "Bloq",
       "Haqqımızda",
       "Əlaqə",
-      "Qaydalar"     // <-- Добавил 6-й пункт
+      "Qaydalar"
     ],
 
     topbar: {
-      addressShort: "Bakı, Nizami r., Azərbaymanapov küç. 31A",
+      addressShort: "Bakı, Nizami r., Azər Manafov küç. 31A (keçmiş 5)",
     },
 
     header: {
@@ -128,7 +128,7 @@ export const siteContent = {
       privacyPolicy: "Məxfilik siyasəti",
       quickLinks: ["Ana səhifə", "Kataloq", "Bloq", "Haqqımızda", "Əlaqə"],
       infoLinks: ["Qaytarılma şərtləri"],
-      fullAddress: "Bakı ş., Nizami r., Azərbaymanapov küç. 31A (keçmiş 5)",
+      fullAddress: "Bakı ş., Nizami r., Azər Manafov küç. 31A (keçmiş 5)",
     },
 
     contact: {
@@ -142,7 +142,7 @@ export const siteContent = {
       cards: {
         phone: { title: "Telefon", value: "+994 55 267 78 11", sub: "10:00 — 20:00, hər gün" },
         whatsapp: { title: "WhatsApp", value: "Bizə yazın", sub: "Adətən 5–10 dəqiqəyə cavab veririk" },
-        office: { title: "Ofis", value: "Bakı, Azərbaymanapov küç. 31A", sub: "(keçmiş 5), 2-ci mərtəbə" },
+        office: { title: "Ofis", value: "Bakı, Azər Manafov küç. 31A", sub: "(keçmiş 5), 2-ci mərtəbə" },
       },
 
       form: {
@@ -172,14 +172,14 @@ export const siteContent = {
     nav: [
       "Главная",
       "Каталог",
-      "Блог",        // <-- Было "Аренда", стало "Блог"
+      "Блог",
       "О компании",
       "Контакты",
-      "Условия"      // <-- Добавил 6-й пункт
+      "Условия"
     ],
 
     topbar: {
-      addressShort: "г. Баку, Низаминский р-н, ул. Азерманапова 31A",
+      addressShort: "г. Баку, Низаминский р-н, ул. Азера Манафова 31A (бывшая 5)",
     },
 
     header: {
@@ -293,7 +293,7 @@ export const siteContent = {
       privacyPolicy: "Политика конфиденциальности",
       quickLinks: ["Главная", "Каталог", "Блог", "О компании", "Контакты"],
       infoLinks: ["Условия возврата"],
-      fullAddress: "г. Баку, Низаминский р-н, ул. Азерманапова 31A (бывшая 5)",
+      fullAddress: "г. Баку, Низаминский р-н, ул. Азера Манафова 31A (бывшая 5)",
     },
     contact: {
       hero: {
@@ -306,7 +306,7 @@ export const siteContent = {
       cards: {
         phone: { title: "Телефон", value: "+994 55 267 78 11", sub: "10:00 — 20:00, без выходных" },
         whatsapp: { title: "WhatsApp", value: "Написать нам", sub: "Отвечаем обычно за 5–10 минут" },
-        office: { title: "Офис", value: "Баку, ул. Азерманапова 31A", sub: "(бывшая 5), 2 этаж" },
+        office: { title: "Офис", value: "Баку, ул. Азера Манафова 31A", sub: "(бывшая 5), 2 этаж" },
       },
 
       form: {
