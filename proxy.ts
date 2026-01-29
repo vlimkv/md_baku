@@ -8,9 +8,13 @@ function isAdmin(pathname: string) {
   return pathname === "/admin" || pathname.startsWith("/admin/");
 }
 
+// function fromAcceptLanguage(req: NextRequest): Lang {
+//   const al = (req.headers.get("accept-language") || "").toLowerCase();
+//   return al.includes("ru") ? "ru" : "az";
+// }
+
 function fromAcceptLanguage(req: NextRequest): Lang {
-  const al = (req.headers.get("accept-language") || "").toLowerCase();
-  return al.includes("ru") ? "ru" : "az";
+  return "az"; 
 }
 
 function fromCookie(req: NextRequest): Lang | null {
