@@ -1,3 +1,7 @@
+---
+## ⚠️ Note
+This project was developed as a commercial freelance order. The source code is published here for **portfolio demonstration purposes only**. All business logic and design rights belong to the respective owner.
+
 # MD Baku Web Platform
 
 A modern, full-stack web application built with **Next.js (App Router)** and **TypeScript**. This repository contains the source code for the MD Baku public platform, featuring a dynamic frontend, multi-language support, and an integrated administration dashboard.
