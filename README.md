@@ -1,4 +1,3 @@
----
 ## ⚠️ Note
 This project was developed as a commercial freelance order. The source code is published here for **portfolio demonstration purposes only**. All business logic and design rights belong to the respective owner.
 
